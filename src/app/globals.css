@@ -1,8 +1,9 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  /* --foreground: #171717; */
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -14,7 +15,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    /* --background: #0a0a0a; */
+    --background: #ededed;
     --foreground: #ededed;
   }
 }
@@ -26,7 +28,7 @@ body {
 }
 
 .hero-section {
-  background-image: url('https://readdy.ai/api/search-image?query=stunning%20travel%20destination%20with%20crystal%20clear%20turquoise%20water%20beach%2C%20white%20sand%2C%20palm%20trees%2C%20and%20mountain%20backdrop.%20Dramatic%20sunset%20sky%20with%20golden%20light%2C%20perfect%20vacation%20spot.%20Professional%20travel%20photography%20with%20high%20detail%2C%20vibrant%20colors%2C%20and%20cinematic%20lighting.%20Wide%20angle%20shot%20showing%20the%20beauty%20of%20nature.&width=1920&height=800&seq=1&orientation=landscape');
+  background-image: url("https://readdy.ai/api/search-image?query=stunning%20travel%20destination%20with%20crystal%20clear%20turquoise%20water%20beach%2C%20white%20sand%2C%20palm%20trees%2C%20and%20mountain%20backdrop.%20Dramatic%20sunset%20sky%20with%20golden%20light%2C%20perfect%20vacation%20spot.%20Professional%20travel%20photography%20with%20high%20detail%2C%20vibrant%20colors%2C%20and%20cinematic%20lighting.%20Wide%20angle%20shot%20showing%20the%20beauty%20of%20nature.&width=1920&height=800&seq=1&orientation=landscape");
   background-size: cover;
   background-position: center;
 }
