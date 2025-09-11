@@ -1,4 +1,6 @@
+// app/page.js
 'use client';
+import { Suspense } from 'react';
 import FeaturedDestinations from '@/components/featured-destinations/FeaturedDestinations';
 import HeroSection from '@/components/hero-section/HeroSection';
 import ReviewRecommendation from '@/components/review-recommendation/ReviewRecommendation';
@@ -7,7 +9,8 @@ import AboutUs from '@/components/utils/about-us/AboutUs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
-export default function Home() {
+// Create a separate component that uses useSearchParams
+function HomeContent() {
   const searchParams = useSearchParams();
   const scrollTo = searchParams.get('scrollTo');
 
@@ -59,5 +62,26 @@ export default function Home() {
         <TravelInspirationSection />
       </div>
     </main>
+  );
+}
+
+// Loading component
+function Loading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense
+export default function Home() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <HomeContent />
+    </Suspense>
   );
 }

@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { FaBars, FaTimes, FaBriefcase } from "react-icons/fa";
 
-const Header = () => {
+// Create a separate component that uses navigation hooks
+function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -90,6 +91,40 @@ const Header = () => {
       </div>
     </header>
   );
-};
+}
 
-export default Header;
+// Loading component for Suspense fallback
+function HeaderLoading() {
+  return (
+    <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Logo skeleton */}
+          <div className="flex items-center space-x-2">
+            <div className="bg-gray-200 w-10 h-10 rounded-lg animate-pulse"></div>
+            <div className="w-24 h-6 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+
+          {/* Navigation skeleton */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div key={item} className="w-16 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
+            ))}
+          </nav>
+
+          {/* Mobile menu button skeleton */}
+          <div className="lg:hidden w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// Main export with Suspense
+export default function Header() {
+  return (
+    <Suspense fallback={<HeaderLoading />}>
+      <HeaderContent />
+    </Suspense>
+  );
+}
