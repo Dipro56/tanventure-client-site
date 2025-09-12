@@ -1,3 +1,4 @@
+export const revalidate = 300;
 import informationServices from '@/service/informationService';
 import Link from 'next/link';
 import React from 'react';
