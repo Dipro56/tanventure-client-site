@@ -17,13 +17,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: 'Admin Login',
-  description: 'Admin authentication',
+  title: 'Nagar USA',
+  description: 'Nagar USA your trusted partner for tour booking in USA',
+  icons: {
+    icon: ['/logo.svg'],
+  },
 };
 
 export default function AdminLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.svg" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

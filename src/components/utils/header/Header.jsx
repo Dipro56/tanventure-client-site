@@ -1,27 +1,28 @@
-"use client";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import React, { useState, Suspense } from "react";
-import { FaBars, FaTimes, FaBriefcase } from "react-icons/fa";
+'use client';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import { FaBars, FaTimes, FaBriefcase } from 'react-icons/fa';
+import Image from 'next/image';
 
 // Create a separate component that uses navigation hooks
 function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const scrollToParam = searchParams.get("scrollTo");
+  const scrollToParam = searchParams.get('scrollTo');
 
   const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/?scrollTo=packages", label: "Packages" },
-    { href: "/?scrollTo=reviews", label: "Reviews" },
-    { href: "/?scrollTo=about", label: "About" },
-    { href: "/?scrollTo=blog", label: "Blog" }
+    { href: '/', label: 'Home' },
+    { href: '/?scrollTo=packages', label: 'Packages' },
+    { href: '/?scrollTo=reviews', label: 'Reviews' },
+    { href: '/?scrollTo=about', label: 'About' },
+    { href: '/?scrollTo=blog', label: 'Blog' },
   ];
 
   const isActive = (href) => {
-    if (href === "/" && pathname === "/") return !scrollToParam; // Home
-    if (href.includes("scrollTo") && scrollToParam) {
+    if (href === '/' && pathname === '/') return !scrollToParam; // Home
+    if (href.includes('scrollTo') && scrollToParam) {
       return href.includes(scrollToParam);
     }
     return false;
@@ -33,12 +34,13 @@ function HeaderContent() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-              <FaBriefcase className="text-xl" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              NagarUSA
-            </span>
+            <Image
+              src={'/logo/nagar_usa_logo.png'}
+              alt={'logo'}
+              height={90}
+              width={70}
+            />
+       
           </Link>
 
           {/* Desktop Navigation */}
@@ -49,8 +51,8 @@ function HeaderContent() {
                 href={item.href}
                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                   isActive(item.href)
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 {item.label}
@@ -63,7 +65,11 @@ function HeaderContent() {
             className="lg:hidden p-2 text-gray-600 hover:text-blue-600 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+            {isMenuOpen ? (
+              <FaTimes className="text-xl" />
+            ) : (
+              <FaBars className="text-xl" />
+            )}
           </button>
         </div>
 
@@ -77,8 +83,8 @@ function HeaderContent() {
                   href={item.href}
                   className={`px-4 py-3 rounded-lg font-medium transition-colors ${
                     isActive(item.href)
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -108,7 +114,10 @@ function HeaderLoading() {
           {/* Navigation skeleton */}
           <nav className="hidden lg:flex items-center space-x-1">
             {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="w-16 h-8 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div
+                key={item}
+                className="w-16 h-8 bg-gray-200 rounded-lg animate-pulse"
+              ></div>
             ))}
           </nav>
 
