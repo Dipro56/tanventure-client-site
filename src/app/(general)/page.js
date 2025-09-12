@@ -1,64 +1,58 @@
 // app/page.js
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import FeaturedDestinations from '@/components/featured-destinations/FeaturedDestinations';
 import HeroSection from '@/components/hero-section/HeroSection';
 import ReviewRecommendation from '@/components/review-recommendation/ReviewRecommendation';
 import TravelInspirationSection from '@/components/travel-inspiration-section/TravelInspirationSection';
 import AboutUs from '@/components/utils/about-us/AboutUs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
 
 // Create a separate component that uses useSearchParams
 function HomeContent() {
   const searchParams = useSearchParams();
   const scrollTo = searchParams.get('scrollTo');
 
-  const packagesRef = useRef();
-  const reviewsRef = useRef();
-  const aboutRef = useRef();
-  const blogRef = useRef();
-
   useEffect(() => {
     if (!scrollTo) return;
 
-    let element = null;
+    const scrollToSection = () => {
+      const element = document.getElementById(scrollTo);
+      if (element) {
+        // Calculate position with offset for header
+        const headerOffset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
 
-    switch (scrollTo) {
-      case 'packages':
-        element = packagesRef.current;
-        break;
-      case 'reviews':
-        element = reviewsRef.current;
-        break;
-      case 'about':
-        element = aboutRef.current;
-        break;
-      case 'blog':
-        element = blogRef.current;
-        break;
-      default:
-        break;
-    }
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
 
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+        // setHasScrolled(true);
+      }
+    };
+
+    // Small delay to ensure DOM is fully rendered
+    const timer = setTimeout(scrollToSection, 300);
+
+    return () => clearTimeout(timer);
   }, [scrollTo]);
 
   return (
     <main>
       <HeroSection />
-      <div ref={packagesRef}>
+      <div id="packages">
         <FeaturedDestinations />
       </div>
-      <div ref={aboutRef}>
+      <div id="about">
         <AboutUs />
       </div>
-      <div ref={reviewsRef}>
+      <div id="reviews">
         <ReviewRecommendation />
       </div>
-      <div ref={blogRef}>
+      <div id="blog">
         <TravelInspirationSection />
       </div>
     </main>
