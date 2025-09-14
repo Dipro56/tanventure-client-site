@@ -34,7 +34,6 @@ import { useState } from 'react';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
 
-
 const AdminSidebar = () => {
   const { sidebarOpen, closeSidebar } = useSidebar();
   const { logout } = useAuth();
@@ -42,16 +41,19 @@ const AdminSidebar = () => {
   const navItems = [
     { name: 'Admin Dashboard', icon: <FiHome />, link: '/admin-dashboard' },
     { name: 'Packages', icon: <FiPackage />, link: '/packages' },
-    // { name: 'Blog', icon: <FiEdit />, link: '/blog' },
+    { name: 'Blog', icon: <FiEdit />, link: '/blog' },
     { name: 'Information', icon: <FiBarChart2 />, link: '/information' },
     // { name: 'Messages', icon: <FiMail />, link: '/messages' },
-    // { name: 'Settings', icon: <FiSettings />, link: '/settings' },
+    { name: 'Banner', icon: <FiSettings />, link: '/banner' },
+    { name: 'Review', icon: <FiMessageSquare />, link: '/review' },
+    //FiMessageSquare
   ];
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
     >
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-blue-600">NagarUSA CMS</h1>
@@ -77,7 +79,10 @@ const AdminSidebar = () => {
         </ul>
       </nav>
       <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
-        <button onClick={logout} className="flex items-center w-full px-4 py-2 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+        <button
+          onClick={logout}
+          className="flex items-center w-full px-4 py-2 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+        >
           <FiLogOut className="mr-3" />
           <span>Logout</span>
         </button>

@@ -8,7 +8,72 @@ import packageServices from '@/service/packageService';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-// Create a separate component that uses useSearchParams
+// Card Component
+function PackageCard({ pkg }) {
+  return (
+    <div className="bg-white rounded-lg overflow-hidden shadow-md transform transition duration-300 hover:-translate-y-2 hover:shadow-xl animate-fadeIn flex flex-col">
+      {/* Image Section */}
+      <div className="relative w-full h-48 overflow-hidden">
+        <Image
+          src={pkg.avatar || '/placeholder-image.jpg'}
+          alt={pkg.packagename}
+          fill
+          className="object-cover object-center transition-transform duration-500 hover:scale-105"
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+
+        {/* Duration Badge */}
+        <div className="absolute top-3 left-3 bg-white/90 text-gray-800 text-xs font-medium px-3 py-1 rounded-md shadow-sm">
+          {pkg.duration ? `${pkg.duration} Days` : 'Custom Package'}
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-5 flex flex-col flex-1">
+        {/* Title + Rating */}
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">
+            {pkg.packagename}
+          </h3>
+          <div className="flex items-center text-yellow-500">
+            <IoIosStar className="text-base" />
+            <span className="ml-1 font-medium text-sm text-gray-800">5.0</span>
+          </div>
+        </div>
+
+        {/* Location */}
+        <p className="text-sm text-gray-600 flex items-center mb-4">
+          <IoLocationSharp className="mr-1 text-red-500" />
+          {pkg.location
+            ? pkg.location.charAt(0).toUpperCase() + pkg.location.slice(1)
+            : 'Unknown Location'}
+        </p>
+
+        {/* Price + Button */}
+        <div className="mt-auto flex justify-between items-center">
+          <div>
+            <span className="text-gray-500 text-sm">From</span>
+            <p className="font-bold text-lg text-gray-900">
+              $
+              {typeof pkg.price === 'number'
+                ? pkg.price.toFixed(2)
+                : pkg.price}
+            </p>
+          </div>
+
+          <Link href={`/package-details/${pkg._id}`}>
+            <button className="bg-indigo-500 hover:bg-indigo-600 transition-colors text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm cursor-pointer">
+              View
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main Content Component
 function FeaturedDestinationsContent() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,89 +106,37 @@ function FeaturedDestinationsContent() {
   }, [packages, searchValue]);
 
   return (
-    <section className="mb-12 mx-6 lg:mx-28 my-4 lg:my-16">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-black">Trending Packages</h2>
+    <section className="mb-12 mx-6 lg:mx-28 my-6 lg:my-16">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">🌍 Trending Packages</h2>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredPackages.map((pkg) => (
-          <div
-            key={pkg._id}
-            className="bg-white rounded-md overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            <div className="relative w-full h-48">
-              <Image
-                src={pkg.avatar || '/placeholder-image.jpg'}
-                alt={pkg.packagename}
-                fill
-                className="object-cover object-top"
-                onError={(e) => {
-                  e.currentTarget.src =
-                    'https://via.placeholder.com/400x300?text=Image+Not+Found';
-                }}
-              />
-              <div className="absolute bottom-3 left-3 bg-[#4F46E5] text-white text-xs font-bold px-2 py-1 rounded">
-                {pkg.duration ? `${pkg.duration} Days` : 'Custom Package'}
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-bold text-black text-lg mb-1 line-clamp-1">
-                    {pkg.packagename}
-                  </h3>
-                  <p className="text-gray-600 text-sm flex items-center mb-2">
-                    <IoLocationSharp className="mr-1 text-red-500" />
-                    {pkg.location
-                      ? pkg.location.charAt(0).toUpperCase() +
-                        pkg.location.slice(1)
-                      : 'Unknown Location'}
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <IoIosStar className="text-yellow-400 mr-1 text-sm" />
-                  <span className="font-medium text-black">5</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center mt-3">
-                <div>
-                  <span className="text-gray-500 text-sm">From</span>
-                  <p className="font-bold text-lg text-black">
-                    $
-                    {typeof pkg.price === 'number'
-                      ? pkg.price.toFixed(2)
-                      : pkg.price}
-                  </p>
-                </div>
-
-                <Link href={`/package-details/${pkg._id}`}>
-                  <button className="bg-[#4F46E5] hover:bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    Details
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredPackages.map((pkg) => (
+            <PackageCard key={pkg._id} pkg={pkg} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
 
-// Loading component for Suspense fallback
+// Loading Skeleton
 function FeaturedDestinationsLoading() {
   return (
-    <section className="mb-12 mx-6 lg:mx-28 my-4 lg:my-16">
-      <h2 className="text-xl font-bold text-black mb-4">Trending Packages</h2>
+    <section className="mb-12 mx-6 lg:mx-28 my-6 lg:my-16">
+      <h2 className="text-2xl font-bold text-gray-900 mb-8">🌍 Trending Packages</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
-            className="bg-white rounded-xl overflow-hidden shadow-md animate-pulse"
+            className="bg-white rounded-lg overflow-hidden shadow-md animate-pulse"
           >
             <div className="w-full h-48 bg-gray-300"></div>
-            <div className="p-4">
-              <div className="h-4 bg-gray-300 rounded mb-2"></div>
+            <div className="p-5">
+              <div className="h-4 bg-gray-300 rounded mb-3"></div>
               <div className="h-3 bg-gray-300 rounded w-3/4 mb-4"></div>
               <div className="h-4 bg-gray-300 rounded w-16"></div>
             </div>
@@ -134,7 +147,16 @@ function FeaturedDestinationsLoading() {
   );
 }
 
-// Main export with Suspense
+// Add fadeIn animation with Tailwind
+// (Add this in globals.css or tailwind.css if not already there)
+// @keyframes fadeIn {
+//   from { opacity: 0; transform: translateY(10px); }
+//   to { opacity: 1; transform: translateY(0); }
+// }
+// .animate-fadeIn {
+//   animation: fadeIn 0.6s ease-out forwards;
+// }
+
 export default function FeaturedDestinations() {
   return (
     <Suspense fallback={<FeaturedDestinationsLoading />}>

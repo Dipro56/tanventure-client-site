@@ -1,18 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { FaRedo } from 'react-icons/fa';
+import { FaRedo, FaUser } from 'react-icons/fa';
 import ReviewCard from '../utils/cards/ReviewCard';
 import RecommendationCard from '../utils/cards/RecommendationCard';
 import packageServices from '@/service/packageService';
+import reviewServices from '@/service/reviewService';
 
 const ReviewRecommendation = () => {
   const [packages, setPackages] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchPackages = async () => {
     try {
-      setLoading(true);
       const result = await packageServices.getPackages();
       console.log('package data', result?.data?.packages);
       
@@ -22,6 +23,34 @@ const ReviewRecommendation = () => {
     } catch (error) {
       console.error('Error fetching packages:', error);
       setError('Failed to fetch packages');
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const result = await reviewServices.getAllReviews();
+      console.log('reviews data', result?.data?.reviews);
+      
+      // Get the latest 3 reviews
+      const latestReviews = (result?.data?.reviews || [])
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
+      
+      setReviews(latestReviews);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      setError('Failed to fetch reviews');
+    }
+  };
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await Promise.all([fetchPackages(), fetchReviews()]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Failed to fetch data');
     } finally {
       setLoading(false);
     }
@@ -37,45 +66,22 @@ const ReviewRecommendation = () => {
     return newArray;
   };
 
+  // Format date to be more readable
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   useEffect(() => {
-    fetchPackages();
+    fetchAllData();
   }, []);
-
-  const reviews = [
-    {
-      name: 'Emily Johnson',
-      imageUrl:
-        'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20smiling%20woman%20with%20brown%20hair%20in%20her%2030s%2C%20neutral%20background%2C%20professional%20portrait%20photography&width=100&height=100&seq=11&orientation=squarish',
-      rating: 5,
-      date: 'April 18, 2025',
-      text: `"Our Hollywood tour was absolutely incredible! Seeing the Walk of Fame and the Hollywood Sign up close was a dream come true. Our guide was knowledgeable and made the experience unforgettable."`,
-      location: 'Hollywood, Los Angeles',
-    },
-    {
-      name: 'Michael Chen',
-      imageUrl:
-        'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20smiling%20man%20with%20dark%20hair%20and%20glasses%20in%20his%2040s%2C%20neutral%20background%2C%20professional%20portrait%20photography&width=100&height=100&seq=12&orientation=squarish',
-      rating: 4.5,
-      date: 'April 10, 2025',
-      text: `"The Santa Monica Pier and Venice Beach experience was fantastic! The vibrant atmosphere, street performers, and beautiful ocean views made for a perfect day. The bike tour along the beach was the highlight of our trip."`,
-      location: 'Santa Monica, Los Angeles',
-    },
-    {
-      name: 'Sophia Williams',
-      imageUrl:
-        'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20smiling%20woman%20with%20blonde%20hair%20in%20her%2020s%2C%20neutral%20background%2C%20professional%20portrait%20photography&width=100&height=100&seq=13&orientation=squarish',
-      rating: 5,
-      date: 'April 2, 2025',
-      text: `"The Getty Center tour exceeded all expectations! The stunning architecture, world-class art collection, and breathtaking views of LA were incredible. The gardens were absolutely beautiful and the tram ride up was so much fun!"`,
-      location: 'Brentwood, Los Angeles',
-    },
-  
-
-  ];
 
   if (loading) {
     return (
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white mx-6 lg:mx-28">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">
             Reviews & Recommendations
@@ -86,10 +92,12 @@ const ReviewRecommendation = () => {
               <div className="flex justify-between items-center mb-6">
                 <div className="h-7 w-32 bg-gray-300 rounded"></div>
               </div>
-              {[1, 2, 3, 4, 5].map((item) => (
+              {[1, 2, 3].map((item) => (
                 <div key={item} className="bg-gray-100 p-4 rounded-lg mb-4 animate-pulse">
                   <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gray-300 rounded-full mr-3"></div>
+                    <div className="w-12 h-12 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
+                      <FaUser className="text-gray-400 text-xl" />
+                    </div>
                     <div>
                       <div className="h-4 w-32 bg-gray-300 rounded mb-2"></div>
                       <div className="h-3 w-24 bg-gray-300 rounded"></div>
@@ -127,7 +135,7 @@ const ReviewRecommendation = () => {
 
   if (error) {
     return (
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white mx-6 lg:mx-28">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">
             Reviews & Recommendations
@@ -135,9 +143,10 @@ const ReviewRecommendation = () => {
           <div className="text-center text-red-500 mb-6">{error}</div>
           <div className="text-center">
             <button
-              onClick={fetchPackages}
-              className="bg-[#4F46E5] text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              onClick={fetchAllData}
+              className="bg-[#4F46E5] text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center mx-auto"
             >
+              <FaRedo className="mr-2" />
               Try Again
             </button>
           </div>
@@ -150,7 +159,7 @@ const ReviewRecommendation = () => {
   const recommendedPackages = packages.slice(0, 6);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white mx-6 lg:mx-28">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">
           Reviews & Recommendations
@@ -160,20 +169,42 @@ const ReviewRecommendation = () => {
           {/* Reviews Column */}
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Reviews</h3>
+              <h3 className="text-xl font-semibold text-gray-900">Customer Reviews</h3>
+              <button 
+                onClick={fetchReviews}
+                className="text-sm text-gray-600 hover:text-primary flex items-center"
+              >
+                <FaRedo className="mr-1" /> Refresh
+              </button>
             </div>
 
-            {/* Render Review Cards */}
-            {reviews.map((review, index) => (
-              <ReviewCard key={index} review={review} />
-            ))}
+            {/* Render Review Cards from API */}
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <ReviewCard 
+                  key={review._id} 
+                  review={{
+                    name: review.name,
+                    imageUrl: null, // No image, will use avatar icon
+                    rating: review.stars,
+                    date: formatDate(review.createdAt),
+                    text: `"${review.description}"`,
+                    location: '' // Location not available in review model
+                  }} 
+                />
+              ))
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                No reviews yet. Be the first to leave a review!
+              </div>
+            )}
           </div>
 
           {/* Recommendations Column */}
           <div>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-gray-900">
-                Recommendation
+                Recommended Packages
               </h3>
               <button 
                 onClick={fetchPackages}

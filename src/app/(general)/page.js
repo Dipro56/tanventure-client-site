@@ -7,6 +7,7 @@ import ReviewRecommendation from '@/components/review-recommendation/ReviewRecom
 import TravelInspirationSection from '@/components/travel-inspiration-section/TravelInspirationSection';
 import AboutUs from '@/components/utils/about-us/AboutUs';
 import { useSearchParams } from 'next/navigation';
+import ContactReviewSection from '@/components/section/ContactReviewSection';
 
 // Create a separate component that uses useSearchParams
 function HomeContent() {
@@ -46,9 +47,12 @@ function HomeContent() {
       <div id="packages">
         <FeaturedDestinations />
       </div>
-      <div id="about">
-        <AboutUs />
+      <div>
+        <ContactReviewSection />
       </div>
+      {/* <div id="about">
+        <AboutUs />
+      </div> */}
       <div id="reviews">
         <ReviewRecommendation />
       </div>
