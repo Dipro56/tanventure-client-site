@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: 'Nagar USA | Information',
+  title: 'Nagar USA | Service',
   description: 'Nagar USA your trusted partner for tour booking in USA',
   icons: {
     icon: ['/logo.svg'],

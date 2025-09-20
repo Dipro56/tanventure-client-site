@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css';
 import Header from '@/components/utils/header/Header';
 import Footer from '@/components/utils/footer/Footer';
+import WhatsAppButton from '@/components/utils/whatsapp-button/WhatsAppButton';
 
 export const metadata = {
   title: 'Nagar USA',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
       >
         <Header />
         {children}
+        <WhatsAppButton />
         <Footer />
       </body>
     </html>

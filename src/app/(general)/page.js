@@ -8,6 +8,7 @@ import TravelInspirationSection from '@/components/travel-inspiration-section/Tr
 import AboutUs from '@/components/utils/about-us/AboutUs';
 import { useSearchParams } from 'next/navigation';
 import ContactReviewSection from '@/components/section/ContactReviewSection';
+import OurServiceSection from '@/components/section/OurServiceSection';
 
 // Create a separate component that uses useSearchParams
 function HomeContent() {
@@ -44,20 +45,23 @@ function HomeContent() {
   return (
     <main>
       <HeroSection />
+      <div>
+        <OurServiceSection />
+      </div>
       <div id="packages">
         <FeaturedDestinations />
       </div>
-      <div>
+      <div id="contact">
         <ContactReviewSection />
       </div>
-      {/* <div id="about">
-        <AboutUs />
-      </div> */}
       <div id="reviews">
         <ReviewRecommendation />
       </div>
       <div id="blog">
         <TravelInspirationSection />
+      </div>
+      <div id="about" className="bg-gradient-to-br from-blue-50 to-indigo-100">
+        <AboutUs />
       </div>
     </main>
   );

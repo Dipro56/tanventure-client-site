@@ -7,12 +7,16 @@ const informationServices = {};
 informationServices.getInformations = async () => {
   try {
     const response = await axios.get(`${baseUrl}/info/get-info`);
-
+    console.log('response', response);
     return response.data;
   } catch (error) {
     // Use the custom error handler for consistent logging
 
-    throw new Error('Failed to fetch information. Please try again later.');
+    throw new Error(
+      'Failed to fetch information. Please try again later.',
+      error.message,
+      error
+    );
   }
 };
 

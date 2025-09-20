@@ -1,16 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import contactServices from '@/service/contactService';
+import { useState, useEffect } from 'react';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     message: ''
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ message: '', type: '' });
+
+  // Auto-dismiss status messages after 5 seconds
+  useEffect(() => {
+    if (submitStatus.message) {
+      const timer = setTimeout(() => {
+        setSubmitStatus({ message: '', type: '' });
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [submitStatus.message]);
 
   const handleChange = (e) => {
     setFormData({
@@ -22,29 +35,24 @@ export default function ContactForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus({ message: '', type: '' });
     
     try {
-      // Replace with actual API call to your contact endpoint
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Call the contact service to submit the form
+      const response = await contactServices.createContact(formData);
       
-      if (response.ok) {
+      if (response.statusCode === 201) {
         setSubmitStatus({ 
           message: 'Your message has been sent successfully! We will get back to you soon.', 
           type: 'success' 
         });
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', phone: '', message: '' });
       } else {
-        throw new Error('Failed to submit form');
+        throw new Error(response.message || 'Failed to submit form');
       }
     } catch (error) {
       setSubmitStatus({ 
-        message: 'Something went wrong. Please try again later.', 
+        message: error.message || 'Something went wrong. Please try again later.', 
         type: 'error' 
       });
     } finally {
@@ -59,10 +67,21 @@ export default function ContactForm() {
       {submitStatus.message && (
         <div className={`mb-6 p-4 rounded-lg ${
           submitStatus.type === 'success' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-red-100 text-red-800'
+            ? 'bg-green-100 text-green-800 border border-green-200' 
+            : 'bg-red-100 text-red-800 border border-red-200'
         }`}>
-          {submitStatus.message}
+          <div className="flex justify-between items-start">
+            <span>{submitStatus.message}</span>
+            <button
+              onClick={() => setSubmitStatus({ message: '', type: '' })}
+              className="ml-4 text-gray-500 hover:text-gray-700"
+              aria-label="Dismiss message"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
       
@@ -80,6 +99,7 @@ export default function ContactForm() {
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             placeholder="Enter your full name"
+            disabled={isSubmitting}
           />
         </div>
         
@@ -96,6 +116,23 @@ export default function ContactForm() {
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             placeholder="Enter your email address"
+            disabled={isSubmitting}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Enter your phone number with country code"
+            disabled={isSubmitting}
           />
         </div>
         
@@ -112,13 +149,14 @@ export default function ContactForm() {
             rows={5}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             placeholder="How can we help you?"
+            disabled={isSubmitting}
           />
         </div>
         
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition"
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center">
@@ -131,8 +169,6 @@ export default function ContactForm() {
           ) : 'Send Message'}
         </button>
       </form>
-      
-
     </div>
   );
 }

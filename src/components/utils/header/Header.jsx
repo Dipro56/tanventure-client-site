@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import { FaBars, FaTimes, FaPhone, FaChevronDown } from 'react-icons/fa';
 import Image from 'next/image';
+import informationServices from '@/service/informationService';
 
 // Create a separate component that uses navigation hooks
 function HeaderContent() {
@@ -13,12 +14,40 @@ function HeaderContent() {
   const searchParams = useSearchParams();
   const scrollToParam = searchParams.get('scrollTo');
 
+  const [loading, setLoading] = useState(true);
+  const [fetchedInfo, setFetchedInfo] = useState({
+    phone: '',
+  });
+
+  const fetchInformation = async () => {
+    try {
+      setLoading(true);
+      const result = await informationServices.getInformations();
+      console.log('Fetched Information:', result?.statusCode, result?.data);
+
+      // Update form data with fetched information
+      if (result?.statusCode === 200) {
+        let infoData = result.data;
+        setFetchedInfo({
+          phone: infoData.phone || '',
+
+          // youtube: infoData.youtubeLink || '',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching information:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/?scrollTo=packages', label: 'Packages' },
     { href: '/?scrollTo=reviews', label: 'Reviews' },
     { href: '/?scrollTo=about', label: 'About' },
     { href: '/?scrollTo=blog', label: 'Blog' },
+    { href: '/?scrollTo=contact', label: 'Contact' },
   ];
 
   const phoneNumbers = [
@@ -40,6 +69,10 @@ function HeaderContent() {
     setIsPhoneDropdownOpen(!isPhoneDropdownOpen);
   };
 
+  useEffect(() => {
+    fetchInformation();
+  }, []);
+
   const handlePhoneOptionClick = (number) => {
     setIsPhoneDropdownOpen(false);
     setIsMenuOpen(false);
@@ -59,7 +92,9 @@ function HeaderContent() {
               width={50}
               className="h-10 w-auto"
             />
-            <span className="hidden sm:block text-xl font-semibold text-gray-800">Nagar USA</span>
+            <span className="hidden sm:block text-xl font-semibold text-gray-800">
+              Nagar USA
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -80,7 +115,7 @@ function HeaderContent() {
           </nav>
 
           {/* Phone Section - Desktop */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden lg:flex items-center cursor-pointer">
             <div className="relative">
               <button
                 onClick={handlePhoneClick}
@@ -92,22 +127,22 @@ function HeaderContent() {
                 <span>Contact Us</span>
                 <FaChevronDown className="text-xs" />
               </button>
-              
+
               {isPhoneDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                   <div className="px-4 py-2 border-b border-gray-100">
                     <p className="text-xs text-gray-500">Call us at:</p>
                   </div>
-                  {phoneNumbers.map((phone, index) => (
+                  {fetchedInfo?.phone ? (
                     <button
-                      key={index}
-                      onClick={() => handlePhoneOptionClick(phone.number)}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      onClick={() => handlePhoneOptionClick(fetchedInfo.phone)}
+                      className="block w-full text-left py-2 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
                     >
-                      <div className="font-medium">{phone.label}</div>
-                      <div className="text-xs text-gray-500">{phone.number}</div>
+                      <div className="text-xs px-4 text-gray-500 w-full flex ">
+                        {fetchedInfo.phone}
+                      </div>
                     </button>
-                  ))}
+                  ) : null}
                 </div>
               )}
             </div>
@@ -115,15 +150,6 @@ function HeaderContent() {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center lg:hidden">
-            {/* Mobile Phone Button */}
-            <button
-              onClick={handlePhoneClick}
-              className="p-2 mr-2 text-gray-600 hover:text-blue-600 transition-colors"
-              aria-label="Contact us"
-            >
-              <FaPhone className="text-xl" />
-            </button>
-            
             <button
               className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -157,41 +183,25 @@ function HeaderContent() {
                   {item.label}
                 </Link>
               ))}
-              
+
               {/* Mobile Phone Options */}
               <div className="px-4 py-3 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-500 mb-2">Call Us</h3>
-                {phoneNumbers.map((phone, index) => (
+                <h3 className="text-sm font-semibold text-gray-500 mb-2">
+                  Call Us
+                </h3>
+
+                {fetchedInfo?.phone ? (
                   <button
-                    key={index}
-                    onClick={() => handlePhoneOptionClick(phone.number)}
+                    onClick={() => handlePhoneOptionClick(fetchedInfo.phone)}
                     className="block w-full text-left py-2 text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    <div className="font-medium">{phone.label}:</div>
-                    <div className="text-sm text-gray-500">{phone.number}</div>
+                    <div className="text-sm text-gray-500 w-full flex   ">
+                      {fetchedInfo.phone}
+                    </div>
                   </button>
-                ))}
+                ) : null}
               </div>
             </nav>
-          </div>
-        )}
-
-        {/* Phone Dropdown for Mobile (when only phone button is clicked) */}
-        {isPhoneDropdownOpen && !isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-md z-40">
-            <div className="px-4 py-3">
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">Call Us</h3>
-              {phoneNumbers.map((phone, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePhoneOptionClick(phone.number)}
-                  className="block w-full text-left py-2 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <div className="font-medium">{phone.label}:</div>
-                  <div className="text-sm text-gray-500">{phone.number}</div>
-                </button>
-              ))}
-            </div>
           </div>
         )}
       </div>

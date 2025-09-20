@@ -56,9 +56,7 @@ function PackageCard({ pkg }) {
             <span className="text-gray-500 text-sm">From</span>
             <p className="font-bold text-lg text-gray-900">
               $
-              {typeof pkg.price === 'number'
-                ? pkg.price.toFixed(2)
-                : pkg.price}
+              {typeof pkg.price === 'number' ? pkg.price.toFixed(2) : pkg.price}
             </p>
           </div>
 
@@ -107,8 +105,10 @@ function FeaturedDestinationsContent() {
 
   return (
     <section className="mb-12 mx-6 lg:mx-28 my-6 lg:my-16">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">🌍 Trending Packages</h2>
+      <div className="flex justify-center items-center mb-8 w-full">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 text-center">
+          🌍 Trending Packages
+        </h1>
       </div>
       {error ? (
         <p className="text-red-500">{error}</p>
@@ -127,7 +127,9 @@ function FeaturedDestinationsContent() {
 function FeaturedDestinationsLoading() {
   return (
     <section className="mb-12 mx-6 lg:mx-28 my-6 lg:my-16">
-      <h2 className="text-2xl font-bold text-gray-900 mb-8">🌍 Trending Packages</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-8">
+        🌍 Trending Packages
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((item) => (
           <div
