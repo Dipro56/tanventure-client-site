@@ -42,15 +42,33 @@ function HomeContent() {
     return () => clearTimeout(timer);
   }, [scrollTo]);
 
+  const query = useSearchParams();
+  const queryValue = searchParams.get('search') || '';
+
   return (
     <main>
       <HeroSection />
-      <div>
-        <OurServiceSection />
-      </div>
-      <div id="packages">
-        <FeaturedDestinations />
-      </div>
+
+      {queryValue ? (
+        <>
+          <div id="packages">
+            <FeaturedDestinations />
+          </div>
+          <div>
+            <OurServiceSection />
+          </div>
+        </>
+      ) : (
+        <>
+          <div>
+            <OurServiceSection />
+          </div>
+          <div id="packages">
+            <FeaturedDestinations />
+          </div>
+        </>
+      )}
+
       <div id="contact">
         <ContactReviewSection />
       </div>

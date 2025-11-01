@@ -1,29 +1,31 @@
-export const revalidate = 300;
-import informationServices from '@/service/informationService';
+import { baseUrl } from '@/utils/config';
 import Link from 'next/link';
 import React from 'react';
 import {
   FaFacebook,
-  FaTwitter,
   FaInstagram,
-  FaPinterest,
-  FaArrowRight,
   FaMapPin,
   FaPhone,
   FaMailBulk,
-  FaRegClock,
-  FaVisa,
-  FaMastercard,
-  FaPaypal,
-  FaApple,
-  FaGoogle,
 } from 'react-icons/fa';
 
-const Footer = async () => {
-  const infoResult = await informationServices.getInformations();
-  const infoDetails = infoResult?.data;
 
-  console.log('infoDetails', infoDetails);
+const Footer = async () => {
+  let infoDetails = null;
+  
+  try {
+    // Use native fetch with Next.js caching
+    const response = await fetch(`${baseUrl}/info/get-info`, {
+      next: { revalidate: 300 } // 5 minutes
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      infoDetails = result?.data;
+    }
+  } catch (error) {
+    console.error('Error fetching footer info:', error);
+  }
 
   return (
     <footer className="bg-[#101828] text-white pt-16 pb-8 px-6 lg:px-28 ">
@@ -64,8 +66,6 @@ const Footer = async () => {
                   About Us
                 </Link>
               </li>
-             
-        
               <li>
                 <Link
                   href={`/?scrollTo=packages`}
@@ -85,10 +85,9 @@ const Footer = async () => {
             </ul>
           </div>
 
-            <div>
+          <div>
             <h3 className="text-lg font-semibold mb-6">Packages</h3>
             <ul className="space-y-3">
-             
               <li>
                 <Link
                   href={`/?scrollTo=packages`}
@@ -105,65 +104,8 @@ const Footer = async () => {
                   Tours & Activities
                 </Link>
               </li>
-        
-              
             </ul>
           </div>
-
-          {/* Support */}
-          {/* <div>
-            <h3 className="text-lg font-semibold mb-6">Support</h3>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Trust & Safety
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition"
-                >
-                  Accessibility
-                </a>
-              </li>
-            </ul>
-          </div> */}
 
           {/* Contact */}
           <div>
@@ -172,28 +114,27 @@ const Footer = async () => {
               <li className="flex items-start">
                 <FaMapPin className="mt-1 mr-3 text-gray-400" />
                 <span className="text-gray-400">
-                 {infoDetails?.address}
+                  {infoDetails?.address || 'Loading...'}
                 </span>
               </li>
               <li className="flex items-center">
                 <FaPhone className="mr-3 text-gray-400" />
                 <a
-                  href="tel:+1234567890"
+                  href={`tel:${infoDetails?.phone}`}
                   className="text-gray-400 hover:text-white transition"
                 >
-                  {infoDetails?.phone}
+                  {infoDetails?.phone || 'Loading...'}
                 </a>
               </li>
               <li className="flex items-center">
                 <FaMailBulk className="mr-3 text-gray-400" />
                 <a
-                  href="mailto:info@travelagency.com"
+                  href={`mailto:${infoDetails?.email}`}
                   className="text-gray-400 hover:text-white transition"
                 >
-                  {infoDetails?.email}
+                  {infoDetails?.email || 'Loading...'}
                 </a>
               </li>
-             
             </ul>
           </div>
         </div>
